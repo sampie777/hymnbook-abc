@@ -1,6 +1,6 @@
 {
   "name": "@hymnbook/abc",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/sampie777/hymnbook-abc",
   "devDependencies": {
-    "abcjs": "git+https://github.com/paulrosen/abcjs.git#v6.2.3",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   },
@@ -33,5 +32,8 @@
     "README.md",
     "package.json",
     "package-lock.json"
-  ]
+  ],
+  "dependencies": {
+    "abcjs": "^6.5.2"
+  }
 }
