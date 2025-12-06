@@ -1,0 +1,37 @@
+{
+  "name": "@hymnbook/abc",
+  "version": "0.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sampie777/hymnbook-abc.git"
+  },
+  "keywords": [
+    "hymnbook",
+    "abc"
+  ],
+  "author": "Samuel-Anton Jansen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sampie777/hymnbook-abc/issues"
+  },
+  "homepage": "https://github.com/sampie777/hymnbook-abc",
+  "devDependencies": {
+    "abcjs": "git+https://github.com/paulrosen/abcjs.git#v6.2.3",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "package.json",
+    "package-lock.json"
+  ]
+}

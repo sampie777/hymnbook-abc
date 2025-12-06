@@ -1,0 +1,8 @@
+node_modules/
+.idea/
+*.iml
+.env
+.DS_Store
+tsconfig.json
+tsup.config.js
+*.tgz
