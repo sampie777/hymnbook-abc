@@ -9,10 +9,10 @@
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "build": "tsup",
-    "publish": "npm run test && npm run build && npm publish --access public",
-    "publish-patch": "npm version patch && npm run publish",
-    "publish-minor": "npm version minor && npm run publish",
-    "publish-major": "npm version major && npm run publish"
+    "build-publish": "npm run build && npm publish --access public",
+    "publish-patch": "npm run test && npm version patch && npm run build-publish",
+    "publish-minor": "npm run test && npm version minor && npm run build-publish",
+    "publish-major": "npm run test && npm version major && npm run build-publish"
   },
   "repository": {
     "type": "git",
