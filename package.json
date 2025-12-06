@@ -44,5 +44,11 @@
   ],
   "dependencies": {
     "abcjs": "^6.5.2"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   }
 }
