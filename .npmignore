@@ -6,3 +6,7 @@ node_modules/
 tsconfig.json
 tsup.config.js
 *.tgz
+__tests__/
+jest.config.cjs
+coverage/
+.git/

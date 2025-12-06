@@ -2,12 +2,14 @@
   "name": "@hymnbook/abc",
   "version": "0.1.0",
   "description": "",
+  "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "build": "tsup",
-    "publish": "npm run build && npm publish --access public",
+    "publish": "npm run test && npm run build && npm publish --access public",
     "publish-patch": "npm version patch && npm run publish",
     "publish-minor": "npm version minor && npm run publish",
     "publish-major": "npm version major && npm run publish"
@@ -27,6 +29,9 @@
   },
   "homepage": "https://github.com/sampie777/hymnbook-abc",
   "devDependencies": {
+    "@jest/globals": "^30.2.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   },
