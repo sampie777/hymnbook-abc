@@ -1,12 +1,16 @@
 {
   "name": "@hymnbook/abc",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "publish": "npm run build && npm publish --access public",
+    "publish-patch": "npm version patch && npm run publish",
+    "publish-minor": "npm version minor && npm run publish",
+    "publish-major": "npm version major && npm run publish"
   },
   "repository": {
     "type": "git",
