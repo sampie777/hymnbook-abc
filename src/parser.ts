@@ -8,13 +8,20 @@ import {
   TuneObject,
   VoiceItem,
   VoiceItemNote
-} from "./abcTypes";
+} from "./types";
 import { validate } from "./validation";
+import { addInfoFieldsToMelody } from "./deparser";
 
 // See also https://abcnotation.com/examples
 
-
-export const parse = (abc: string): AbcSong | undefined => {
+/**
+ * Generates an AbcSong object from an ABC notation string.
+ * This function does some extra processing to handle slurs and lyrics properly.
+ * If you do not want this, use `convertStringToAbcTune` directly.
+ *
+ * @param abc
+ */
+export const parse = (abc: string): AbcSong => {
   // Remove comments
   abc = abc
     .replace(/%.*/g, "")
@@ -24,9 +31,6 @@ export const parse = (abc: string): AbcSong | undefined => {
   extractInfoFields(abc, song);
 
   const tuneObject = convertStringToAbcTune(abc);
-  if (tuneObject === undefined) {
-    return undefined;
-  }
 
   // Get the first staff only (thus in case of multiple instrument play, only take the first instrument)
   song.clef = tuneObject.lines!![0].staff!![0].clef || song.clef;
@@ -118,6 +122,12 @@ const processSlursForLine = (line: VoiceItem[]) => {
   });
 };
 
+/**
+ * Get an info/header field from an ABC notation string.
+ * @param abc
+ * @param field
+ * @param _default
+ */
 export const getField = (abc: string, field: string, _default?: string): (string | undefined) => {
   const result = abc.match(new RegExp("(^|\n) *\t*" + field + ":(.*)?"));
   if (result == null || result.length !== 3 || result[2] == null) {
@@ -126,6 +136,11 @@ export const getField = (abc: string, field: string, _default?: string): (string
   return result[2].trim();
 };
 
+/**
+ * Extract info/header fields from an ABC notation string into an AbcSong object and return the remaining melody string.
+ * @param abc
+ * @param song
+ */
 export const extractInfoFields = (abc: string, song: AbcSong): string => {
   song.area = getField(abc, "A");
   song.book = getField(abc, "B");
@@ -152,6 +167,7 @@ export const extractInfoFields = (abc: string, song: AbcSong): string => {
   song.voice = getField(abc, "V");
   song.referenceNumber = getField(abc, "X", "1");
   song.transcription = getField(abc, "Z");
+
   return abc
     .replace(/%.*\n/g, "")
     .replace(/(^|\n) *\t*[ABCDFGHIKLMmNOPQRrSsTUVXZ]:.*/g, "")
@@ -160,7 +176,12 @@ export const extractInfoFields = (abc: string, song: AbcSong): string => {
     .replace(/\n*$/g, "");
 };
 
-export const extractNotesAndLyrics = (abc: string): NoteGroupInterface => {
+/**
+ * Extract notes and lyrics from an ABC notation string as a single line for each.
+ * Note that you must first remove info/header fields before using this function.
+ * @param abc
+ */
+export const squashNotesAndLyrics = (abc: string): NoteGroupInterface => {
   const notes: string[] = [];
   const lyrics: string[] = [];
   abc.split("\n")
@@ -176,40 +197,13 @@ export const extractNotesAndLyrics = (abc: string): NoteGroupInterface => {
   return {
     notes: notes.join(" "),
     lyrics: lyrics.join(" ")
-  } as NoteGroupInterface;
+  };
 };
 
-export const addInfoFieldsToMelody = (song: AbcSong, abc: string): string => {
-  let result = "";
-  // See for following order of fields: https://abcnotation.com/wiki/abc:standard:v2.1#description_of_information_fields
-  result += song.referenceNumber === undefined ? "" : "X:" + song.referenceNumber + "\n";
-  result += song.title === undefined ? "" : "T:" + song.title + "\n";
-  result += song.area === undefined ? "" : "A:" + song.area + "\n";
-  result += song.book === undefined ? "" : "B:" + song.book + "\n";
-  result += song.composer === undefined ? "" : "C:" + song.composer + "\n";
-  result += song.discography === undefined ? "" : "D:" + song.discography + "\n";
-  result += song.fileUrl === undefined ? "" : "F:" + song.fileUrl + "\n";
-  result += song.group === undefined ? "" : "G:" + song.group + "\n";
-  result += song.history === undefined ? "" : "H:" + song.history + "\n";
-  result += song.instruction === undefined ? "" : "I:" + song.instruction + "\n";
-  result += song.key === undefined ? "" : "K:" + song.key + "\n";
-  result += song.unitNoteLength === undefined ? "" : "L:" + song.unitNoteLength + "\n";
-  result += song.meter === undefined ? "" : "M:" + song.meter + "\n";
-  result += song.macro === undefined ? "" : "m:" + song.macro + "\n";
-  result += song.notes === undefined ? "" : "N:" + song.notes + "\n";
-  result += song.origin === undefined ? "" : "O:" + song.origin + "\n";
-  result += song.parts === undefined ? "" : "P:" + song.parts + "\n";
-  result += song.tempo === undefined ? "" : "Q:" + song.tempo + "\n";
-  result += song.rhythm === undefined ? "" : "R:" + song.rhythm + "\n";
-  result += song.remark === undefined ? "" : "r:" + song.remark + "\n";
-  result += song.source === undefined ? "" : "S:" + song.source + "\n";
-  result += song.symbolLine === undefined ? "" : "s:" + song.symbolLine + "\n";
-  result += song.userDefined === undefined ? "" : "U:" + song.userDefined + "\n";
-  result += song.voice === undefined ? "" : "V:" + song.voice + "\n";
-  result += song.transcription === undefined ? "" : "Z:" + song.transcription + "\n";
-  return result + abc;
-};
-
+/**
+ * Converts and validates an ABC notation string into a TuneObject.
+ * @param abc
+ */
 export const convertStringToAbcTune = (abc: string): TuneObject => {
   const objectArray: TuneObjectArray = ABCJS.parseOnly(abc);
   // Convert types
@@ -218,6 +212,9 @@ export const convertStringToAbcTune = (abc: string): TuneObject => {
   validate(object != null, "Tune object may not be null");
   validate(object.length > 0, "Tune object may not be empty");
   validate(object[0].lines != null, "Tune object lines may not be null");
+
+  object[0].lines = object[0].lines.filter(it => it.staff); // Remove empty lines without staff
+
   validate(object[0].lines.length > 0, "Tune object lines are empty");
   validate(object[0].lines[0].staff != null, "Staffs may not be null");
   validate(object[0].lines[0].staff!!.length > 0, "Staffs are empty");
@@ -246,7 +243,11 @@ const processAbcLyrics = (object: Array<TuneObject>) => {
   );
 };
 
-// Match each lyric line with each melody line
+/**
+ * Combine multi line lyrics line with a multi line melody into a single ABC notation string.
+ * @param melody
+ * @param lyrics
+ */
 export const combineMelodyAndLyrics = (melody: string, lyrics: string): string => {
   const song = new AbcSong();
   const rawMelody = extractInfoFields(melody, song);

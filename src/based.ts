@@ -1,4 +1,4 @@
-import { combineMelodyAndLyrics } from "./abc";
+import { combineMelodyAndLyrics } from "./parser";
 import { AbcMelody, AbcSubMelody, Verse } from "./basedTypes";
 
 

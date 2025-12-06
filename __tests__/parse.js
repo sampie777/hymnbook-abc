@@ -1,5 +1,5 @@
 import {describe, expect, it} from '@jest/globals';
-import * as ABC from "../src/abc";
+import * as ABC from "../src";
 
 
 describe("test abc parse", () => {
@@ -32,7 +32,7 @@ describe("test abc parse", () => {
     const data = "C2 DF E2 F2 | FG G4 A B | G8|]\n" +
       "w: ik ben_ ge-test of niet waar~ik dan ook end_";
 
-    const result = ABC.extractNotesAndLyrics(data);
+    const result = ABC.squashNotesAndLyrics(data);
     expect(result.notes).toBe("C2 DF E2 F2 | FG G4 A B | G8|]");
     expect(result.lyrics).toBe("ik ben_ ge-test of niet waar~ik dan ook end_");
   });
@@ -42,7 +42,7 @@ describe("test abc parse", () => {
       "FG G4 A B | G8|]\n" +
       "w: of niet waar~ik dan ook end_";
 
-    const result = ABC.extractNotesAndLyrics(data);
+    const result = ABC.squashNotesAndLyrics(data);
     expect(result.notes).toBe("C2 DF E2 F2 | FG G4 A B | G8|]");
     expect(result.lyrics).toBe("ik ben_ ge-test of niet waar~ik dan ook end_");
   });

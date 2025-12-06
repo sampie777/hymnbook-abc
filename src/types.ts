@@ -12,7 +12,7 @@ export type AbcType =
   | "bar_thick_thin"
   | "bar_right_repeat"
   | "bar_left_repeat"
-  | "bar_double_repeat";
+  | "bar_dbl_repeat";
 export type AbcElementType = "note" | "bar";
 export type Clef =
   "treble"
@@ -99,6 +99,7 @@ export interface VoiceItemBar {
   type: AbcType;
   startChar: number;
   endChar: number;
+  startEnding?: string; // Labels the repeat section
 }
 
 export interface NoteProperties {
@@ -107,6 +108,8 @@ export interface NoteProperties {
   lyric?: AbcLyric[];
   chord?: AbcChord[];
   rest?: AbcRest;
+  startBeam?: boolean;
+  endBeam?: boolean;
 }
 
 export interface VoiceItemNote extends NoteProperties {
@@ -308,7 +311,7 @@ export class AbcSong {
   };
 }
 
-export interface NoteGroupInterface {
-  notes: string,
+export type NoteGroupInterface = {
+  notes: string
   lyrics: string
 }
