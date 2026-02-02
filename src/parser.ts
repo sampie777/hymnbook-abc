@@ -247,8 +247,13 @@ const processAbcLyrics = (object: Array<TuneObject>) => {
  * Combine multi line lyrics line with a multi line melody into a single ABC notation string.
  * @param melody
  * @param lyrics
+ * @param options
  */
-export const combineMelodyAndLyrics = (melody: string, lyrics: string): string => {
+export const combineMelodyAndLyrics = (
+  melody: string,
+  lyrics: string,
+  options: { trimLines?: boolean } = { trimLines: false },
+): string => {
   const song = new AbcSong();
   const rawMelody = extractInfoFields(melody, song);
 
@@ -256,6 +261,13 @@ export const combineMelodyAndLyrics = (melody: string, lyrics: string): string =
     .replaceAll(/\n+/g, "\n")
     .trim()
     .split("\n")
+    .map(it => it.trim())
+    .map(it => options.trimLines
+      ? it
+        .replaceAll(/(^y+|y+$)*/gi, "")
+        .replaceAll(/ *y* *(\|+]*) *y* */gi, " $1 ")
+        .trim()
+      : it);
   const lyricLines = lyrics
     .replaceAll(/\n+/g, "\n")
     .trim()
